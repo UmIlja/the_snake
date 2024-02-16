@@ -63,6 +63,8 @@ class Apple(GameObject):
     """Класс игрового объекта ЯБЛОКО"""
 
     def __init__(self, position, body_color):
+        """Базовые параметы класса"""
+        super().__init__(position, body_color)
         self.position = position
         self.position = self.randomize_position()
         self.body_color = body_color
@@ -85,6 +87,7 @@ class Snake(GameObject):
 
     def __init__(self, position, body_color):
         """Базовые параметы класса"""
+        super().__init__(position, body_color)
         self.body_color = body_color
         self.position = position
         # Изначатьно список координат только из одного кортежа

@@ -175,11 +175,10 @@ def main():
     apple = Apple((randint(0, GRID_WIDTH) * GRID_SIZE,
                    randint(0, GRID_HEIGHT) * GRID_SIZE), APPLE_COLOR)
     snake = Snake(GameObject.position, SNAKE_COLOR)
-    apple.draw(screen)
 
     while True:
         clock.tick(SPEED)
-
+        apple.draw(screen)
         snake.draw(screen)
         snake.move()
 

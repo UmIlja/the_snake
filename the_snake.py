@@ -62,9 +62,10 @@ class GameObject:
 class Apple(GameObject):
     """Класс игрового объекта ЯБЛОКО"""
 
-    def __init__(self):
+    def __init__(self, position, body_color):
+        self.position = position
         self.position = self.randomize_position()
-        self.body_color = APPLE_COLOR
+        self.body_color = body_color
 
     def randomize_position(self):
         """Яблоко появляется в случайном месте на игровом поле"""
@@ -82,11 +83,10 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс игрового объекла ЗМЕЙКА"""
 
-    def __init__(self):
+    def __init__(self, position, body_color):
         """Базовые параметы класса"""
-        self.body_color = SNAKE_COLOR  # Зелёный
-        self.position = ((SCREEN_WIDTH // 2),  # Появляется в центре экрана
-                         (SCREEN_HEIGHT // 2))
+        self.body_color = body_color
+        self.position = position
         # Изначатьно список координат только из одного кортежа
         self.positions = [(self.position)]
         self.direction = RIGHT  # При запуске змейка движется вправо
@@ -172,12 +172,14 @@ def main():
     Создание экземпляров классов(Snake и Apple)
     и описание основной логики игры
     """
-    apple = Apple()
-    snake = Snake()
+    apple = Apple((randint(0, GRID_WIDTH) * GRID_SIZE,
+                   randint(0, GRID_HEIGHT) * GRID_SIZE), APPLE_COLOR)
+    snake = Snake(GameObject.position, SNAKE_COLOR)
+    apple.draw(screen)
 
     while True:
         clock.tick(SPEED)
-        apple.draw(screen)
+
         snake.draw(screen)
         snake.move()
 

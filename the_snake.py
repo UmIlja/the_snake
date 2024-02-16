@@ -49,7 +49,8 @@ class GameObject:
     position = ((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
     body_color = None
 
-    def __init__(self, position, body_color):
+    def __init__(self, position=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)),
+                 body_color=None):
         """Базовые параметы класса"""
         self.position = position
         self.body_color = body_color
@@ -62,7 +63,7 @@ class GameObject:
 class Apple(GameObject):
     """Класс игрового объекта ЯБЛОКО"""
 
-    def __init__(self, position, body_color):
+    def __init__(self, position=None, body_color=APPLE_COLOR):
         """Базовые параметы класса"""
         super().__init__(position, body_color)
         self.position = position
@@ -85,7 +86,7 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс игрового объекла ЗМЕЙКА"""
 
-    def __init__(self, position, body_color):
+    def __init__(self, position=GameObject.position, body_color=SNAKE_COLOR):
         """Базовые параметы класса"""
         super().__init__(position, body_color)
         self.body_color = body_color

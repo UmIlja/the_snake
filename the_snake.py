@@ -124,7 +124,6 @@ class Snake(GameObject):
 
     def draw(self, surface):
         """Отрисовка Змейки"""
-
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(surface, self.body_color, head_rect)
         pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)

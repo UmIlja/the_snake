@@ -118,13 +118,12 @@ class Snake(GameObject):
             # Если столкновения не произошло,
             # новая позиция головы вставляется в начало списка
             self.positions.insert(0, self.new_head_position)
+
         if self.length < len(self.positions):
             self.last = self.positions.pop()  # Последний элемент удаляется
 
     def draw(self, surface):
         """Отрисовка Змейки"""
-        for _ in self.positions[:-1]:
-            super().draw(surface)
 
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(surface, self.body_color, head_rect)
@@ -138,6 +137,7 @@ class Snake(GameObject):
 
     def reset(self):
         """Сброс змейки в начальное состояние после столкновения с собой"""
+        self.length = 1
         self.positions = [self.position]
         self.direction = choice((DOWN, UP, RIGHT, LEFT))
         screen.fill(BOARD_BACKGROUND_COLOR)
@@ -167,23 +167,22 @@ def main():
     """
     apple = Apple()
     snake = Snake(((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)), SNAKE_COLOR)
-    
+
     while True:
         clock.tick(SPEED)
-        snake.draw(screen)
-        apple.draw(screen)
-
         while apple.position in snake.positions:
             apple.position = apple.randomize_position()
+
+        snake.draw(screen)
+        apple.draw(screen)
 
         snake.move()
         handle_keys(snake)
 
-        if snake.positions == apple.position:  # Cъела ли змейка яблоко
+        if snake.new_head_position == apple.position:  # Cъела ли змейка яблоко
             snake.length += 1  # Если съела, то выросла
             apple.randomize_position()
             apple.draw(screen)
-        
 
         snake.update_direction()
         pygame.display.update()

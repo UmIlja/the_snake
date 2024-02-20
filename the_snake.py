@@ -57,19 +57,33 @@ class GameObject:
         pygame.draw.rect(surface, self.body_color, rect)
         pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
 
+    def draw_cell(self):
+        """Отрисовка клеток"""
+        pass
+
+    def delete_cell(self, surface, position):
+        """Затирание клеток"""
+        pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, position)
+
 
 class Apple(GameObject):
     """Класс игрового объекта ЯБЛОКО"""
 
-    def __init__(self):
+    def __init__(self, body_color=APPLE_COLOR):
         """Базовые параметы класса"""
-        super().__init__(body_color=APPLE_COLOR)
-        self.position = self.randomize_position()
+        super().__init__(body_color=body_color)
+        self.randomize_position(forbidden_positions=((SCREEN_WIDTH // 2),
+                                                     (SCREEN_HEIGHT // 2)))
+        self.draw(screen)
 
-    def randomize_position(self):
+    def randomize_position(self, forbidden_positions):
         """Яблоко появляется в случайном месте на игровом поле"""
-        return (randint(0, GRID_WIDTH) * GRID_SIZE,
-                randint(0, GRID_HEIGHT) * GRID_SIZE)
+        self.position = (
+            randint(0, GRID_WIDTH) * GRID_SIZE,
+            randint(0, GRID_HEIGHT) * GRID_SIZE,
+        )
+        while self.position in forbidden_positions:
+            self.position = self.randomize_position(forbidden_positions)
 
     def draw(self, surface):
         """Отрисовка Яблока"""
@@ -79,18 +93,10 @@ class Apple(GameObject):
 class Snake(GameObject):
     """Класс игрового объекла ЗМЕЙКА"""
 
-    def __init__(self, position=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)),
-                 body_color=SNAKE_COLOR):
+    def __init__(self):
         """Базовые параметы класса"""
-        super().__init__(position, body_color)
-        self.body_color = body_color
-        self.position = position
-        # Изначатьно список координат только из одного кортежа
-        self.positions = [self.position]
-        self.direction = RIGHT  # При запуске змейка движется вправо
-        self.next_direction = None  # При запуске игры еще не определено
-        self.last = None  # Изначально у змейки нет «последнего сегмента»
-        self.length = 1  # Только одна голова в начале игры
+        super().__init__(body_color=SNAKE_COLOR)
+        self.reset()
 
     def get_head_position(self):
         """Возвращает первый элемент в списке positions(ГОЛОВУ)"""
@@ -105,10 +111,14 @@ class Snake(GameObject):
     def move(self):
         """Движение змейки"""
         self.head_position = self.get_head_position()
-        self.new_head_position = ((self.head_position[0] + self.direction[0]
-                                   * GRID_SIZE) % SCREEN_WIDTH,
-                                  (self.head_position[1] + self.direction[1]
-                                   * GRID_SIZE) % SCREEN_HEIGHT)
+        self.new_head_position = ((self.head_position[0]
+                                  + self.direction[0]
+                                  * GRID_SIZE)
+                                  % SCREEN_WIDTH,
+                                  (self.head_position[1]
+                                  + self.direction[1]
+                                  * GRID_SIZE)
+                                  % SCREEN_HEIGHT)
 
         if self.new_head_position in self.positions[2:]:
             # Если змейка съела себя(кроме головы и шеи) - СБРОС
@@ -127,6 +137,7 @@ class Snake(GameObject):
         head_rect = pygame.Rect(self.positions[0], (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(surface, self.body_color, head_rect)
         pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        # super().delete_cell(self, surface)
 
         if self.last:
             last_rect = pygame.Rect(
@@ -136,10 +147,13 @@ class Snake(GameObject):
 
     def reset(self):
         """Сброс змейки в начальное состояние после столкновения с собой"""
-        self.length = 1
+        self.next_direction = None  # При запуске игры еще не определено
+        self.last = None  # Изначально у змейки нет «последнего сегмента»
+        self.length = 1  # Только одна голова в начале игры и при сбросе
         self.positions = [self.position]
         self.direction = choice((DOWN, UP, RIGHT, LEFT))
         screen.fill(BOARD_BACKGROUND_COLOR)
+        # Apple.draw(screen)
 
 
 def handle_keys(game_object):
@@ -165,22 +179,20 @@ def main():
     и описание основной логики игры
     """
     apple = Apple()
-    snake = Snake(((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)), SNAKE_COLOR)
+    snake = Snake()
+    apple.draw(screen)
 
     while True:
         clock.tick(SPEED)
-        while apple.position in snake.positions:
-            apple.position = apple.randomize_position()
 
         snake.draw(screen)
-        apple.draw(screen)
-
         snake.move()
         handle_keys(snake)
 
         if snake.new_head_position == apple.position:  # Cъела ли змейка яблоко
             snake.length += 1  # Если съела, то выросла
-            apple.randomize_position()
+            # яблоко рандомится, но не на позициях змейки
+            apple.randomize_position(snake.positions)
             apple.draw(screen)
 
         snake.update_direction()

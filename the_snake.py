@@ -177,11 +177,12 @@ def main():
     while True:
         clock.tick(SPEED)
         snake.draw(screen)
-        snake.move()
-        handle_keys(snake)
 
         if snake.reset:
             apple.draw(screen)
+
+        snake.move()
+        handle_keys(snake)
 
         if snake.new_head_position == apple.position:  # Cъела ли змейка яблоко
             snake.length += 1  # Если съела, то выросла

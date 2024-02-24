@@ -58,7 +58,7 @@ class GameObject:
 
     def draw(self):
         """Любой игровой объект будет иметь отрисовку"""
-        raise (NotImplementedError('Переопределите метод в дочерних классах'))
+        raise (NotImplementedError('Переопределите метод в дочерних классах!'))
 
     def draw_cell(self, surface, cell_coordinates):
         """Отрисовка клеток"""

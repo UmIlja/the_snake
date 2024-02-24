@@ -45,28 +45,31 @@ clock = pygame.time.Clock()
 class GameObject:
     """Базовый класс объектов игры"""
 
-    def __init__(self, position=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)),
-                 body_color=BOARD_BACKGROUND_COLOR,):
+    def __init__(self,
+                 position=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2)),
+                 body_color=BOARD_BACKGROUND_COLOR,
+                 border_color=BORDER_COLOR,
+                 board_color=BOARD_BACKGROUND_COLOR):
         """Базовые параметы класса"""
         self.position = position
         self.body_color = body_color
+        self.border_color = border_color
+        self.board_color = board_color
 
-    def draw(self, surface):
+    def draw(self):
         """Любой игровой объект будет иметь отрисовку"""
-        rect = pygame.Rect((self.position), (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, self.body_color, rect)
-        pygame.draw.rect(surface, BORDER_COLOR, rect, 1)
+        raise (NotImplementedError('Переопределите метод в дочерних классах'))
 
-    def draw_cell(self, surface, positions):
+    def draw_cell(self, surface, cell_coordinates):
         """Отрисовка клеток"""
-        head_rect = pygame.Rect(positions, (GRID_SIZE, GRID_SIZE))
+        head_rect = pygame.Rect(cell_coordinates, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(surface, self.body_color, head_rect)
-        pygame.draw.rect(surface, BORDER_COLOR, head_rect, 1)
+        pygame.draw.rect(surface, self.border_color, head_rect, 1)
 
-    def delete_cell(self, surface, position):
+    def delete_cell(self, surface, cell_coordinates):
         """Затирание клеток"""
-        position = pygame.Rect((position), (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(surface, BOARD_BACKGROUND_COLOR, position)
+        position = pygame.Rect(cell_coordinates, (GRID_SIZE, GRID_SIZE))
+        pygame.draw.rect(surface, self.board_color, position)
 
 
 class Apple(GameObject):
@@ -75,8 +78,9 @@ class Apple(GameObject):
     def __init__(self, body_color=APPLE_COLOR):
         """Базовые параметы класса"""
         super().__init__(body_color=body_color)
-        self.randomize_position(forbidden_positions=((SCREEN_WIDTH // 2),
-                                                     (SCREEN_HEIGHT // 2)))
+        self.randomize_position(
+            forbidden_positions=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
+        )
 
     def randomize_position(self, forbidden_positions):
         """Яблоко появляется в случайном месте на игровом поле"""
@@ -87,7 +91,7 @@ class Apple(GameObject):
 
     def draw(self, surface):
         """Отрисовка Яблока"""
-        super().draw(surface)
+        super().draw_cell(surface, cell_coordinates=(self.position))
 
 
 class Snake(GameObject):
@@ -134,10 +138,10 @@ class Snake(GameObject):
 
     def draw(self, surface):
         """Отрисовка Змейки"""
-        super().draw_cell(surface, positions=(self.positions[0]))
+        super().draw_cell(surface, cell_coordinates=(self.get_head_position()))
 
         if self.last:
-            super().delete_cell(surface, position=(self.last))
+            super().delete_cell(surface, cell_coordinates=(self.last))
 
     def reset(self):
         """Сброс змейки в начальное состояние после столкновения с собой"""
@@ -177,9 +181,7 @@ def main():
     while True:
         clock.tick(SPEED)
         snake.draw(screen)
-
-        if snake.reset:
-            apple.draw(screen)
+        apple.draw(screen)
 
         snake.move()
         handle_keys(snake)
@@ -189,6 +191,10 @@ def main():
             # яблоко рандомится, но не на позициях змейки
             apple.randomize_position(snake.positions)
             apple.draw(screen)
+
+        # if snake.new_head_position in snake.positions[2:]:
+        #    apple.randomize_position(snake.positions)
+        #    apple.draw(screen)
 
         snake.update_direction()
         pygame.display.update()

@@ -58,7 +58,7 @@ class GameObject:
 
     def draw(self):
         """Любой игровой объект будет иметь отрисовку"""
-        raise (NotImplementedError('Переопределите метод в дочерних классах!'))
+        raise NotImplementedError("Переопределите метод в дочерних классах!")
 
     def draw_cell(self, surface, cell_coordinates):
         """Отрисовка клеток"""
@@ -78,11 +78,11 @@ class Apple(GameObject):
     def __init__(self, body_color=APPLE_COLOR):
         """Базовые параметы класса"""
         super().__init__(body_color=body_color)
-        self.randomize_position(
-            forbidden_positions=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))
-        )
+        self.randomize_position()
 
-    def randomize_position(self, forbidden_positions):
+    def randomize_position(
+            self,
+            forbidden_positions=((SCREEN_WIDTH // 2), (SCREEN_HEIGHT // 2))):
         """Яблоко появляется в случайном месте на игровом поле"""
         self.position = (randint(0, GRID_WIDTH) * GRID_SIZE,
                          randint(0, GRID_HEIGHT) * GRID_SIZE,)
@@ -193,8 +193,8 @@ def main():
             apple.draw(screen)
 
         # if snake.new_head_position in snake.positions[2:]:
-        #    apple.randomize_position(snake.positions)
-        #    apple.draw(screen)
+         #   apple.randomize_position(snake.positions)
+         #   apple.draw(screen)
 
         snake.update_direction()
         pygame.display.update()

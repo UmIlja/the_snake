@@ -124,14 +124,8 @@ class Snake(GameObject):
                                   * GRID_SIZE)
                                   % SCREEN_HEIGHT)
 
-        if self.new_head_position in self.positions[2:]:
-            # Если змейка съела себя(кроме головы и шеи) - СБРОС
-            # Для сброса Змейка должна состоять минимум из 3 секций
-            self.reset()
-        else:
-            # Если столкновения не произошло,
-            # новая позиция головы вставляется в начало списка
-            self.positions.insert(0, self.new_head_position)
+        # Новая позиция головы вставляется в начало списка
+        self.positions.insert(0, self.new_head_position)
 
         if self.length < len(self.positions):
             self.last = self.positions.pop()  # Последний элемент удаляется
@@ -177,24 +171,26 @@ def main():
     """
     apple = Apple()
     snake = Snake()
+    apple.draw(screen)
 
     while True:
         clock.tick(SPEED)
         snake.draw(screen)
-        apple.draw(screen)
-
         snake.move()
         handle_keys(snake)
 
-        if snake.new_head_position == apple.position:  # Cъела ли змейка яблоко
+        # Cъела ли змейка яблоко
+        if snake.new_head_position == apple.position:
             snake.length += 1  # Если съела, то выросла
             # яблоко рандомится, но не на позициях змейки
             apple.randomize_position(snake.positions)
             apple.draw(screen)
 
-        # if snake.new_head_position in snake.positions[2:]:
-         #   apple.randomize_position(snake.positions)
-         #   apple.draw(screen)
+        # Если змейка съела себя(кроме головы и шеи) - СБРОС
+        if snake.new_head_position in snake.positions[2:]:
+            snake.reset()
+            apple.randomize_position(snake.positions)
+            apple.draw(screen)
 
         snake.update_direction()
         pygame.display.update()

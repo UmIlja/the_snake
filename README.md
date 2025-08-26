@@ -18,7 +18,7 @@
 Клонировать репозиторий и перейти в него в командной строке:
 
 ```
-git clone https:/
+git clone https://github.com/UmIlja/the_snake.git
 ```
 ```
 cd the_snake
